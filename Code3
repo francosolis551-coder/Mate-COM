@@ -1,0 +1,124 @@
+#include <iostream>
+#include <conio.h>
+#include <vector>
+
+using namespace std;
+
+void main() {
+	int i, j, filas = 0, columnas = 0, Cant0 = 0, CantVal = 0;
+	char Respuesta;
+
+	cout << "Desea Introducir de manera autonoma los elementos de la matriz? (Y/N): ";
+	cin >> Respuesta;
+
+	Respuesta = toupper(Respuesta);
+
+	switch (Respuesta)
+	{
+	case 'Y':
+		cout << "Inserte el numero de filas: ";
+		cin >> filas;
+
+		cout << "Inserte el numero de columnas: ";
+		cin >> columnas;
+
+		if (filas >= 5 && filas <= 15) {
+			if (columnas >= 5 && columnas <= 15) {
+
+				vector<vector<int>> Matriz(filas, vector<int>(columnas, 0));
+
+				for (i = 0;i < filas; i++) {
+					for (j = 0;j < columnas; j++) {
+						cout << "Por favor ingrese el valor [" << i << "]" << "[" << j <<"]: ";
+						cin >> Matriz[i][j];
+						Matriz[i][j] = abs(Matriz[i][j]);
+					}
+				}
+
+				for (i = 0;i < filas; i++) {
+					if (Matriz[i][i] == 0) {
+						Cant0 = Cant0 + 1;
+					}
+				}
+
+				if (Cant0 == filas) {
+					for (i = 0;i < filas; i++) {
+						for (j = 0;j < columnas; j++) {
+							if (Matriz[j][i] == Matriz[i][j]) {
+								CantVal = CantVal + 1;
+							}
+						}
+					}
+
+					if (CantVal == filas * columnas) {
+						for (i = 0;i < filas; i++) {
+							for (j = 0;j < columnas; j++) {
+								cout << Matriz[i][j] << "\t";
+							}
+							cout << "\n";
+						}
+						cout << "La matriz es simetrica y su diagonal esta compuesta por 0's";
+					}
+					else {
+						cout << "La matriz no es simetrica";
+					}
+				}
+				else {
+					cout << "La diagonal no esta compuesta totalmente de 0's";
+				}
+
+				//Si quieres usar los valores de la matriz, escribe aqui
+
+			}
+			else {
+				cout << "Valor invalido";
+			}
+		}
+		else {
+			cout << "Valor invalido";
+		}; break;
+
+	case 'N':
+		cout << "Inserte el numero de filas: ";
+		cin >> filas;
+
+		cout << "Inserte el numero de columnas: ";
+		cin >> columnas;
+
+		if (filas >= 5 && filas <= 15) {
+			if (columnas >= 5 && columnas <= 15) {
+
+				vector<vector<int>> Matriz(filas, vector<int>(columnas, 0));
+
+				for (i = 0;i < filas; i++) {
+					for (j = 0;j < columnas; j++) {
+						Matriz[i][j] = (i + j) + 22;
+						Matriz[i][i] = 0;
+					}
+				}
+
+				for (i = 0;i < filas; i++) {
+					for (j = 0;j < columnas; j++) {
+						cout << Matriz[i][j] << "\t";
+					}
+					cout << "\n";
+				}
+
+				//Si quieres usar los valores de la matriz, escribe aqui
+
+			}
+			else {
+				cout << "Valor invalido";
+			}
+		}
+		else {
+			cout << "Valor invalido";
+		}; break;
+
+	default:
+		cout << "Opcion Invalida";
+	}
+
+
+	getch();
+}

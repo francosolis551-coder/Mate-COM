@@ -6,7 +6,7 @@
 using namespace std;
 
 void main() {
-	int i, j, filas = 0, columnas = 0, Cant0 = 0, CantVal = 0, marcador = 0, filaAct = 0, sumTot = 0, costo = 0;
+	int i, j, filas = 0, columnas = 0, Cant0 = 0, CantVal = 0, marcador = 0, filaAct = 0, sumTot = 0, costo = 1;
 	int min = 20, max = 50;
 	char Respuesta;
 
@@ -19,6 +19,7 @@ void main() {
 	cout << "Desea Introducir de manera autonoma los elementos de la matriz? (Y/N): ";
 	cin >> Respuesta;
 
+
 	Respuesta = toupper(Respuesta);
 
 	switch (Respuesta)
@@ -30,6 +31,8 @@ void main() {
 		cout << "Inserte el numero de columnas: ";
 		cin >> columnas;
 
+		cout << "\n";
+
 		if (filas >= 5 && filas <= 15) {
 			if (columnas >= 5 && columnas <= 15) {
 
@@ -37,11 +40,15 @@ void main() {
 
 				for (i = 0;i < filas; i++) {
 					for (j = 0;j < columnas; j++) {
+						cout << "\033[A\033[2K"; //Utilizacion de secuencias de escape ANSI
 						cout << "Por favor ingrese el valor [" << i << "]" << "[" << j <<"]: ";
 						cin >> Matriz[i][j];
 						Matriz[i][j] = abs(Matriz[i][j]);
 					}
 				}
+
+				cout << "\033[A\033[2K"; // \033[A: Sube el cursor a la linea previa. \033[2K: Borra por completo la linea anterior 
+				cout << "\n";
 
 				for (i = 0;i < filas; i++) {
 					if (Matriz[i][i] == 0) {
@@ -128,6 +135,8 @@ void main() {
 
 		cout << "Inserte el numero de columnas: ";
 		cin >> columnas;
+
+		cout << "\n";
 
 		if (filas >= 5 && filas <= 15) {
 			if (columnas >= 5 && columnas <= 15) {

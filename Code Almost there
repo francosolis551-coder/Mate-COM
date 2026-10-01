@@ -86,7 +86,7 @@ void main() {
 							int ColumnaUsada = -1;
 
 							for (j = 0;j < columnas; j++) {
-								if (!columnaUsed[j] && Matriz[filaAct][j] != 0 && Matriz[filaAct][j] < FilaMnor) {
+								if (!columnaUsed[j] && filaAct != j && Matriz[filaAct][j] < FilaMnor) {
 									FilaMnor = Matriz[filaAct][j];
 									ColumnaUsada = j;
 								}
@@ -171,7 +171,7 @@ void main() {
 					int ColumnaUsada = -1;
 
 					for (j = 0;j < columnas; j++) {
-						if (!columnaUsed[j] && Matriz[filaAct][j] != 0 && Matriz[filaAct][j] < FilaMnor) {
+						if (!columnaUsed[j] && filaAct != j && Matriz[filaAct][j] < FilaMnor) {
 							FilaMnor = Matriz[filaAct][j];
 							ColumnaUsada = j;
 						}

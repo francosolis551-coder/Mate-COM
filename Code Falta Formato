@@ -1,0 +1,216 @@
+#include <iostream>
+#include <conio.h>
+#include <vector>
+#include <random>
+
+using namespace std;
+
+void main() {
+	int i, j, filas = 0, columnas = 0, Cant0 = 0, CantVal = 0, marcador = 0, filaAct = 0, sumTot = 0, costo = 1;
+	int min = 20, max = 50;
+	char Respuesta;
+
+	random_device rd;
+	mt19937 gen(rd());
+	uniform_int_distribution<> distrib(min, max);
+
+	int Alea = distrib(gen);
+
+	cout << "Desea Introducir de manera autonoma los elementos de la matriz? (Y/N): ";
+	cin >> Respuesta;
+
+
+	Respuesta = toupper(Respuesta);
+
+	switch (Respuesta)
+	{
+	case 'Y':
+		cout << "Inserte el numero de filas: ";
+		cin >> filas;
+
+		cout << "Inserte el numero de columnas: ";
+		cin >> columnas;
+
+		cout << "\n";
+
+		if (filas >= 5 && filas <= 15) {
+			if (columnas >= 5 && columnas <= 15) {
+
+				vector<vector<int>> Matriz(filas, vector<int>(columnas, 0));
+
+				for (i = 0;i < filas; i++) {
+					for (j = 0;j < columnas; j++) {
+						cout << "\033[A\033[2K"; //Utilizacion de secuencias de escape ANSI
+						cout << "Por favor ingrese el valor [" << i << "]" << "[" << j <<"]: ";
+						cin >> Matriz[i][j];
+						Matriz[i][j] = abs(Matriz[i][j]);
+					}
+				}
+
+				cout << "\033[A\033[2K"; // \033[A: Sube el cursor a la linea previa. \033[2K: Borra por completo la linea anterior 
+				cout << "\n";
+
+				for (i = 0;i < filas; i++) {
+					if (Matriz[i][i] == 0) {
+						Cant0 = Cant0 + 1;
+					}
+				}
+
+				if (Cant0 == filas) {
+					for (i = 0;i < filas; i++) {
+						for (j = 0;j < columnas; j++) {
+							if (Matriz[j][i] == Matriz[i][j]) {
+								CantVal = CantVal + 1;
+							}
+						}
+					}
+
+					if (CantVal == filas * columnas) {
+						for (i = 0;i < filas; i++) {
+							for (j = 0;j < columnas; j++) {
+								cout << Matriz[i][j] << "\t";
+							}
+							cout << "\n";
+						}
+						cout << "\nLa matriz es simetrica y su diagonal esta compuesta por 0's\n";
+					    //Metodo TSP (Metodo del vecino mas cercano)
+						//--------------------------------------------------------------------------------------
+						vector<int> Valores_Menores;
+						vector<bool> columnaUsed(columnas, false);
+
+						columnaUsed[filaAct] = true;
+
+						for (i = 0;i < filas - 1; i++) {
+
+							int FilaMnor = 9999999;
+							int ColumnaUsada = -1;
+
+							for (j = 0;j < columnas; j++) {
+								if (!columnaUsed[j] && filaAct != j && Matriz[filaAct][j] < FilaMnor) {
+									FilaMnor = Matriz[filaAct][j];
+									ColumnaUsada = j;
+								}
+							}
+
+							if (ColumnaUsada != -1) {
+								Valores_Menores.push_back(FilaMnor);
+								columnaUsed[ColumnaUsada] = true;
+								filaAct = ColumnaUsada;
+							}
+						}
+
+						Valores_Menores.push_back(Matriz[filaAct][0]);
+
+						for (int valor : Valores_Menores) {
+							cout << "\nV" << marcador++ << ": " << valor << " ";
+							sumTot += valor;
+							cout << "\nCosto acumulado " << costo++ << ": " << sumTot << "\n";
+						}
+
+						cout << "\n";
+
+						cout << "Costo Total Minimo: " << sumTot << "\n";
+						//-------------------------------------------------------------------------
+					}
+					else {
+						cout << "La matriz no es simetrica";
+					}
+				}
+				else {
+					cout << "La diagonal no esta compuesta totalmente de 0's";
+				}
+
+			}
+			else {
+				cout << "Valor invalido";
+			}
+		}
+		else {
+			cout << "Valor invalido";
+		}; break;
+
+	case 'N':
+		cout << "Inserte el numero de filas: ";
+		cin >> filas;
+
+		cout << "Inserte el numero de columnas: ";
+		cin >> columnas;
+
+		cout << "\n";
+
+		if (filas >= 5 && filas <= 15) {
+			if (columnas >= 5 && columnas <= 15) {
+
+				vector<vector<int>> Matriz(filas, vector<int>(columnas, 0));
+
+				for (i = 0;i < filas; i++) {
+					for (j = 0;j < columnas; j++) {
+						Matriz[i][j] = (i + j) + Alea;
+						Matriz[i][i] = 0;
+					}
+				}
+
+				for (i = 0;i < filas; i++) {
+					for (j = 0;j < columnas; j++) {
+						cout << Matriz[i][j] << "\t";
+					}
+					cout << "\n";
+				}
+
+				//Metodo TSP (Vecino mas cercano)
+                //------------------------------------------------------
+
+				vector<int> Valores_Menores;
+				vector<bool> columnaUsed(columnas, false);
+
+				columnaUsed[filaAct] = true;
+
+				for (i = 0;i < filas - 1; i++) {
+
+					int FilaMnor = 9999999;
+					int ColumnaUsada = -1;
+
+					for (j = 0;j < columnas; j++) {
+						if (!columnaUsed[j] && filaAct != j && Matriz[filaAct][j] < FilaMnor) {
+							FilaMnor = Matriz[filaAct][j];
+							ColumnaUsada = j;
+						}
+					}
+
+					if (ColumnaUsada != -1) {
+						Valores_Menores.push_back(FilaMnor);
+						columnaUsed[ColumnaUsada] = true;
+						filaAct = ColumnaUsada;
+					}
+				}
+
+				Valores_Menores.push_back(Matriz[filaAct][0]);
+
+				for (int valor : Valores_Menores) {
+					cout << "\nV" << marcador++ << ": " << valor << " ";
+					sumTot += valor;
+					cout << "\nCosto acumulado " << costo++ << ": " << sumTot << "\n";
+				}
+			
+				cout << "\n";
+
+				cout << "Costo Total Minimo: " << sumTot << "\n";
+
+				//------------------------------------------------------
+
+			}
+			else {
+				cout << "Valor invalido";
+			}
+		}
+		else {
+			cout << "Valor invalido";
+		}; break;
+
+	default:
+		cout << "Opcion Invalida";
+	}
+
+
+	getch();
+}

@@ -1,0 +1,287 @@
+#include <iostream>
+#include <conio.h>
+#include <vector>
+#include <iomanip>
+
+using namespace std;
+
+// Función principal del programa
+void main() {
+	// Declaración de variables de control de bucles, dimensiones, acumuladores y costos
+	int i, j, filas = 0, columnas = 0, Cant0 = 0, CantVal = 0, marcador = 0, filaAct = 0, sumTot = 0, costo = 1;
+	char Respuesta;
+
+	// Inicialización de la semilla para la generación de números aleatorios basada en el tiempo
+	srand(time(NULL));
+
+	// Genera un valor constante aleatorio entre 20 y 49 para el llenado automático de la matriz
+	int Alea = 20 + rand() % 30;
+
+	// Solicita al usuario elegir entre el modo de ingreso manual ('Y') o automático ('N')
+	cout << "Desea Introducir de manera autonoma los elementos de la matriz? (Y/N): ";
+	cin >> Respuesta;
+
+	// Convierte el caracter ingresado a mayúscula para simplificar la evaluación
+	Respuesta = toupper(Respuesta);
+
+	switch (Respuesta)
+	{
+	case 'Y': // --- MODO MANUAL (INGRESO DE ELEMENTOS POR EL USUARIO) ---
+		cout << "Inserte el numero de filas: ";
+		cin >> filas;
+
+		cout << "Inserte el numero de columnas: ";
+		cin >> columnas;
+
+		cout << "\n";
+
+		// Validación de límites: la matriz debe ser cuadrada y de tamaño entre 5x5 y 15x15
+		if (filas >= 5 && filas <= 15) {
+			if (columnas >= 5 && columnas <= 15) {
+
+				// Creación de la matriz dinámica [filas x columnas] inicializada en 0
+				vector<vector<int>> Matriz(filas, vector<int>(columnas, 0));
+
+				// Bucle de lectura de datos casilla por casilla
+				for (i = 0;i < filas; i++) {
+					for (j = 0;j < columnas; j++) {
+						// Secuencias de escape ANSI:
+						// \033[A  : Mueve el cursor a la línea superior.
+						// \033[2K : Limpia/borra la línea actual.
+						// Sirve para sobreescribir la pregunta en la misma línea de la consola.
+						cout << "\033[A\033[2K"; //Utilizacion de secuencias de escape ANSI
+						cout << "Por favor ingrese el valor [" << i << "]" << "[" << j << "]: ";
+						cin >> Matriz[i][j];
+						// Asegura que los valores sean positivos (representando distancias/costos positivos)
+						Matriz[i][j] = abs(Matriz[i][j]);
+					}
+				}
+
+				// Limpia el mensaje final de lectura en la consola
+				cout << "\033[A\033[2K"; // \033[A: Sube el cursor a la linea previa. \033[2K: Borra por completo la linea anterior 
+				cout << "\n";
+
+				// VALIDACIÓN 1: Comprobar que todos los elementos de la diagonal principal sean 0
+				for (i = 0;i < filas; i++) {
+					if (Matriz[i][i] == 0) {
+						Cant0 = Cant0 + 1;
+					}
+				}
+
+				// Si la diagonal principal tiene solo 0s (tantos 0s como filas)...
+				if (Cant0 == filas) {
+					// VALIDACIÓN 2: Comprobar si la matriz es simétrica (Matriz[j][i] == Matriz[i][j])
+					for (i = 0;i < filas; i++) {
+						for (j = 0;j < columnas; j++) {
+							if (Matriz[j][i] == Matriz[i][j]) {
+								CantVal = CantVal + 1;
+							}
+						}
+					}
+
+					// Si todos los elementos de la matriz cumplen la simetría...
+					if (CantVal == filas * columnas) {
+
+						// IMPRESIÓN DE LA MATRIZ CON FORMATO
+						// Encabezado con índices de columnas
+						cout << "   ";
+
+						for (j = 0; j < columnas; j++) {
+							cout << setw(3) << j;
+						}
+
+						cout << "\n"; //aqui
+
+						// Filas con índice lateral y corchetes alineados
+						for (i = 0;i < filas; i++) {
+							cout << i << setw(2) << "[";
+							for (j = 0;j < columnas; j++) {
+								cout << setw(3) << Matriz[i][j];
+							}
+							cout << "]";
+							cout << "\n";
+						}
+						cout << "\nLa matriz es simetrica y su diagonal esta compuesta por 0's\n";
+
+						// RESOLUCIÓN TSP (Problema del Vendedor Viajero) - Algoritmo del Vecino Más Cercano
+						//--------------------------------------------------------------------------------------
+						vector<int> Valores_Menores;               // Almacena la distancia del tramo seleccionado
+						vector<int> FilaI;                         // Almacena el nodo de origen del tramo
+						vector<int> FilaJ;                         // Almacena el nodo de destino del tramo
+						vector<bool> columnaUsed(columnas, false); // Rastrea qué nodos ya han sido visitados
+
+						// Se marca el nodo de inicio V0 como visitado
+						columnaUsed[filaAct] = true;
+
+						// Realiza la búsqueda del vecino más cercano durante (filas - 1) pasos
+						for (i = 0;i < filas - 1; i++) {
+
+							int FilaMnor = 9999999; // Valor bandera muy alto para encontrar el menor costo
+							int ColumnaUsada = -1;  // Almacena la columna del vecino seleccionado
+
+							// Busca en la fila del nodo actual la columna no visitada con el menor valor
+							for (j = 0;j < columnas; j++) {
+								if (!columnaUsed[j] && filaAct != j && Matriz[filaAct][j] < FilaMnor) {
+									FilaMnor = Matriz[filaAct][j];
+									ColumnaUsada = j;
+								}
+							}
+
+							// Si encuentra un destino válido:
+							if (ColumnaUsada != -1) {
+								Valores_Menores.push_back(FilaMnor);
+								FilaI.push_back(filaAct);      // Registra el nodo origen
+								FilaJ.push_back(ColumnaUsada); // Registra el nodo destino
+
+								columnaUsed[ColumnaUsada] = true; // Marca el nodo destino como visitado
+								filaAct = ColumnaUsada;          // El nodo destino se convierte en el nodo actual
+							}
+						}
+
+						// Retorno al nodo inicial V0 para completar el ciclo
+						Valores_Menores.push_back(Matriz[filaAct][0]);
+						FilaI.push_back(filaAct);
+						FilaJ.push_back(0);
+
+						// MUESTRA DE RESULTADOS Y CÁLCULO DE DISTANCIA TOTAL
+						cout << "\nInicio desde V0: No hay distancia recorrida\n";
+
+						for (int a = 0; a < filas; a++) {
+							cout << "\nV" << FilaI[a] << "------>" << "V" << FilaJ[a] << " Distancia recorrida: " << Valores_Menores[a] << " ";
+							sumTot += Valores_Menores[a];
+							cout << "\nCosto acumulado " << costo++ << ": " << sumTot << "\n";
+						}
+
+						cout << "\n";
+
+						cout << "Distancia Total Minima: " << sumTot << "\n";
+						//-------------------------------------------------------------------------
+					}
+					else {
+						cout << "La matriz no es simetrica";
+					}
+				}
+				else {
+					cout << "La diagonal no esta compuesta totalmente de 0's";
+				}
+
+			}
+			else {
+				cout << "Valor invalido";
+			}
+		}
+		else {
+			cout << "Valor invalido";
+		}; break;
+
+	case 'N': // --- MODO AUTOMÁTICO (GENERACIÓN AUTOMÁTICA DE MATRIZ) ---
+		cout << "Inserte el numero de filas: ";
+		cin >> filas;
+
+		cout << "Inserte el numero de columnas: ";
+		cin >> columnas;
+
+		cout << "\n";
+
+		if (filas >= 5 && filas <= 15) {
+			if (columnas >= 5 && columnas <= 15) {
+
+				vector<vector<int>> Matriz(filas, vector<int>(columnas, 0));
+
+				// Encabezado de columnas
+				cout << "   ";
+
+				for (j = 0;j < columnas; j++) {
+					cout << setw(3) << j;
+				}
+
+				cout << "\n";
+
+				// Asignación de valores basada en una fórmula matemática fija + constante aleatoria
+				for (i = 0;i < filas; i++) {
+					for (j = 0;j < columnas; j++) {
+						Matriz[i][j] = (i + j) + Alea;
+						Matriz[i][i] = 0; // Garantiza 0s en la diagonal principal
+					}
+				}
+
+				// Impresión de la matriz generada
+				for (i = 0;i < filas; i++) {
+					cout << i << setw(2) << "[";
+					for (j = 0;j < columnas; j++) {
+						cout << setw(3) << Matriz[i][j];
+					}
+					cout << "]";
+					cout << "\n";
+				}
+
+				// RESOLUCIÓN TSP (Vecino más cercano)
+				//------------------------------------------------------
+
+				vector<int> Valores_Menores;               // Distancias de cada tramo
+				vector<int> FilaI;                         // Nodos origen
+				vector<int> FilaJ;                         // Nodos destino
+				vector<bool> columnaUsed(columnas, false); // Vector de nodos visitados
+
+				columnaUsed[filaAct] = true;
+
+				// Búsqueda del vecino más cercano en cada paso
+				for (i = 0;i < filas - 1; i++) {
+
+					int FilaMnor = 9999999;
+					int ColumnaUsada = -1;
+
+					for (j = 0;j < columnas; j++) {
+						if (!columnaUsed[j] && filaAct != j && Matriz[filaAct][j] < FilaMnor) {
+							FilaMnor = Matriz[filaAct][j];
+							ColumnaUsada = j;
+						}
+					}
+
+					// Registro directo del trayecto seleccionado
+					if (ColumnaUsada != -1) {
+						Valores_Menores.push_back(FilaMnor);
+						FilaI.push_back(filaAct);
+						FilaJ.push_back(ColumnaUsada);
+
+						columnaUsed[ColumnaUsada] = true;
+						filaAct = ColumnaUsada;
+					}
+				}
+
+				// Tramo final de retorno al nodo inicial V0
+				Valores_Menores.push_back(Matriz[filaAct][0]);
+				FilaI.push_back(filaAct);
+				FilaJ.push_back(0);
+
+				// Impresión del resultado y suma de costos acumulados
+				cout << "\nInicio desde V0: No hay distancia recorrida\n";
+
+				for (int a = 0; a < filas; a++) {
+					cout << "\nV" << FilaI[a] << "------>" << "V" << FilaJ[a] << " Distancia recorrida: " << Valores_Menores[a] << " ";
+					sumTot += Valores_Menores[a];
+					cout << "\nCosto acumulado " << costo++ << ": " << sumTot << "\n";
+				}
+
+				cout << "\n";
+
+				cout << "Distancia Total Minima: " << sumTot << "\n";
+
+				//------------------------------------------------------
+
+			}
+			else {
+				cout << "Valor invalido";
+			}
+		}
+		else {
+			cout << "Valor invalido";
+		}; break;
+
+	default:
+		cout << "Opcion Invalida";
+	}
+
+	// Pausa la ejecución de la consola hasta que se presione una tecla
+	getch();
+}
